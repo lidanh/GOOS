@@ -17,10 +17,23 @@ class AuctionSniperEndToEndTest extends Specification {
       // application start bidding
       application.startBiddingIn(auction)
       // check if the auction chat has received join request from the sniper application
-      auction.hasReceivedJoinRequestFromSniper
+      auction.hasReceivedJoinRequestFrom(ApplicationRunner.SNIPER_XMPP_ID)
       // close auction
       auction.announceClosed()
       // make sure that the application got LOST message from the auction
+      application.showsSniperHasLostAuction()
+    }
+
+    "makes a higher bid but loses" in new after {
+      auction.startSellingItem()
+      application.startBiddingIn(auction)
+      auction.hasReceivedJoinRequestFrom(ApplicationRunner.SNIPER_XMPP_ID)
+
+      auction.reportPrice(1000, 98, "other bidder")
+      application.hasShownSniperIsBidding()
+      auction.hasReceivedBid(1098, ApplicationRunner.SNIPER_XMPP_ID)
+
+      auction.announceClosed()
       application.showsSniperHasLostAuction()
     }
   }

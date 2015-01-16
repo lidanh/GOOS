@@ -6,11 +6,13 @@ scalaVersion := "2.11.5"
 
 libraryDependencies ++= Seq(
   "org.specs2" %% "specs2-core" % "2.4.15" % "test",
+  "org.specs2" %% "specs2-mock" % "2.4.15" % "test",
   "org.scala-lang" % "scala-swing" % "2.11+",
   "com.googlecode.windowlicker" % "windowlicker-core" % "r268",
   "com.googlecode.windowlicker" % "windowlicker-swing" % "r268",
   "org.igniterealtime.smack" % "smack" % "3.2.1",
-  "org.igniterealtime.smack" % "smackx" % "3.2.1"
+  "org.igniterealtime.smack" % "smackx" % "3.2.1",
+  "org.mockito" % "mockito-core" % "1.10.19"
 )
 
 scalacOptions in Test ++= Seq("-Yrangepos")

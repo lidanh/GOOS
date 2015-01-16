@@ -6,6 +6,7 @@ package endtoend.auctionsniper
 object ApplicationRunner {
   val SNIPER_ID = "sniper"
   val SNIPER_PASSWORD = "sniper"
+  val SNIPER_XMPP_ID = SNIPER_ID + "@" + FakeAuctionServer.XMPP_HOSTNAME + "/Auction"
 }
 
 class ApplicationRunner {
@@ -30,6 +31,10 @@ class ApplicationRunner {
     thread.start()
     val d = new AuctionSniperDriver(1000)
     driver = Some(d)
+  }
+
+  def hasShownSniperIsBidding(): Unit = {
+    driver.foreach(_.showsSniperStatus(MainWindow.STATUS_BIDDING))
   }
 
   def showsSniperHasLostAuction(): Unit = {

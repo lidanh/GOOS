@@ -2,9 +2,10 @@ package endtoend.auctionsniper
 
 import java.util.concurrent.{ArrayBlockingQueue, TimeUnit}
 
+import auctionsniper.Main
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.{Chat, ChatManagerListener, MessageListener, XMPPConnection}
-import org.specs2.matcher.MustMatchers
+import org.specs2.matcher.{Matcher, MustMatchers}
 
 /**
  * Created by lidan on 14/01/15.
@@ -34,10 +35,25 @@ class FakeAuctionServer(val itemId: String) extends MustMatchers {
     })
   }
 
-  def hasReceivedJoinRequestFromSniper = messageListener.receivesAMessage
+  def reportPrice(price: Int, increment: Int, bidder: String): Unit = {
+    currentChat.foreach(_.sendMessage("SOLVersion: 1.1; Event: PRICE; CurrentPrice: %d; Increment: %d; Bidder: %s;".format(price, increment, bidder)))
+  }
+
+  def hasReceivedJoinRequestFrom(sniperId: String) = {
+    receivesAMessageMatching(sniperId, equalTo(Main.JOIN_COMMAND_FORMAT))
+  }
+
+  def hasReceivedBid(bid: Int, sniperId: String): Unit = {
+    receivesAMessageMatching(sniperId, equalTo(Main.BID_COMMAND_FORMAT.format(bid)))
+  }
+
+  def receivesAMessageMatching[T >: String](sniperId: String, messageMatcher: Matcher[T]): Unit = {
+    messageListener.receivesAMessage(messageMatcher)
+    currentChat.foreach(_.getParticipant must equalTo(sniperId))
+  }
 
   def announceClosed(): Unit = {
-    currentChat.foreach(_.sendMessage(new Message()))
+    currentChat.foreach(_.sendMessage("SOLVersion: 1.1; Event: CLOSE;"))
   }
 
   def stop(): Unit = {
@@ -51,9 +67,11 @@ class FakeAuctionServer(val itemId: String) extends MustMatchers {
       messages.add(message)
     }
 
-    def receivesAMessage = {
+    def receivesAMessage[T >: String](messageMatcher: Matcher[T]) = {
       val msg = messages.poll(5, TimeUnit.SECONDS)
       msg must not beNull
+      val body = msg.getBody
+      body must messageMatcher
     }
   }
 }

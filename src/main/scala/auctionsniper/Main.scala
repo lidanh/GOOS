@@ -1,10 +1,10 @@
 package auctionsniper
 
+import java.awt.event.{WindowAdapter, WindowEvent}
 import javax.swing.SwingUtilities
 
 import auctionsniper.ui.MainWindow
-import org.jivesoftware.smack.packet.Message
-import org.jivesoftware.smack.{Chat, MessageListener, XMPPConnection}
+import org.jivesoftware.smack.{Chat, XMPPConnection, XMPPException}
 
 /**
  * Created by lidan on 14/01/15.
@@ -26,22 +26,60 @@ class Main {
   }
 
   private def joinAuction(connection: XMPPConnection, itemId: String): Unit = {
-    val chat = connection.getChatManager().createChat(
-      auctionId(itemId, connection),
-      new MessageListener() {
-        override def processMessage(chat: Chat, message: Message): Unit = {
-          SwingUtilities.invokeLater(new Runnable {
-            override def run(): Unit = ui.foreach(_.showStatus(MainWindow.STATUS_LOST))
-          })
-        }
-      })
+    disconnectWhenUICloses(connection)
 
+    val chat = connection.getChatManager.createChat(auctionId(itemId, connection), null)
     notToBeGCd = Some(chat)
-    chat.sendMessage(new Message())
+
+    val auction = new XMPPAuction(chat)
+
+    chat.addMessageListener(new AuctionMessageTranslator(new AuctionSniper(auction, new SniperStateDisplayer())))
+
+    auction.join()
+  }
+
+  private def disconnectWhenUICloses(connection: XMPPConnection): Unit = {
+    ui.foreach(_.addWindowListener(new WindowAdapter {
+      override def windowClosed(e: WindowEvent): Unit = connection.disconnect()
+    }))
   }
 
   def auctionId(itemId: String, connection: XMPPConnection): String = {
     AUCTION_ID_FORMAT.format(itemId, connection.getServiceName)
+  }
+
+  class XMPPAuction(private val chat: Chat) extends Auction {
+    override def bid(amount: Int): Unit = {
+      sendMessage(BID_COMMAND_FORMAT.format(amount))
+    }
+
+    override def join(): Unit = {
+      sendMessage(JOIN_COMMAND_FORMAT)
+    }
+
+    private[this] def sendMessage(message: String): Unit = {
+      try {
+        chat.sendMessage(message)
+      } catch {
+        case e: XMPPException => e.printStackTrace()
+      }
+    }
+  }
+
+  class SniperStateDisplayer extends SniperListener {
+    override def sniperBidding(): Unit = showStatus(MainWindow.STATUS_BIDDING)
+
+    override def sniperLost(): Unit = showStatus(MainWindow.STATUS_LOST)
+
+    override def sniperWinning(): Unit = showStatus(MainWindow.STATUS_WINNING)
+
+    private[this] def showStatus(status: String): Unit = {
+      SwingUtilities.invokeLater(new Runnable {
+        override def run(): Unit = {
+          ui.foreach(_.showStatus(status))
+        }
+      })
+    }
   }
 }
 
@@ -54,6 +92,9 @@ object Main extends App {
   val AUCTION_RECOURSE = "Auction"
   val ITEM_ID_AS_LOGIN = "auction-%s"
   val AUCTION_ID_FORMAT = ITEM_ID_AS_LOGIN + "@%s/" + AUCTION_RECOURSE
+
+  val BID_COMMAND_FORMAT = "SOLVersion: 1.1; Command: BID; Price: %d;"
+  val JOIN_COMMAND_FORMAT = "SOLVersion: 1.1; Command: JOIN;"
 
   val main = new Main
   main.joinAuction(connectTo(args(ARG_HOSTNAME), args(ARG_USERNAME), args(ARG_PASSWORD)), args(ARG_ITEM_ID))
