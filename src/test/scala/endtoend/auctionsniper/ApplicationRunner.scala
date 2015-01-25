@@ -10,6 +10,7 @@ object ApplicationRunner {
 }
 
 class ApplicationRunner {
+
   import auctionsniper.Main
   import auctionsniper.ui.MainWindow
   import endtoend.auctionsniper.ApplicationRunner._
@@ -39,6 +40,14 @@ class ApplicationRunner {
 
   def showsSniperHasLostAuction(): Unit = {
     driver.foreach(_.showsSniperStatus(MainWindow.STATUS_LOST))
+  }
+
+  def showsSniperHasWonAuction() = {
+    driver.foreach(_.showsSniperStatus(MainWindow.STATUS_WINNING))
+  }
+
+  def hasShownSniperIsWinning() = {
+    driver.foreach(_.showsSniperStatus(MainWindow.STATUS_WINNING))
   }
 
   def stop(): Unit = {

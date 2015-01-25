@@ -10,3 +10,7 @@ trait AuctionEventListener extends EventListener {
   def auctionClosed()
   def auctionFailed()
 }
+
+trait PriceSource
+object FromSniper extends PriceSource
+object FromOtherBidder extends PriceSource
