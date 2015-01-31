@@ -9,4 +9,5 @@ trait SniperListener extends EventListener {
   def sniperBidding()
   def sniperLost()
   def sniperWinning()
+  def sniperWon()
 }

@@ -43,7 +43,7 @@ class ApplicationRunner {
   }
 
   def showsSniperHasWonAuction() = {
-    driver.foreach(_.showsSniperStatus(MainWindow.STATUS_WINNING))
+    driver.foreach(_.showsSniperStatus(MainWindow.STATUS_WON))
   }
 
   def hasShownSniperIsWinning() = {

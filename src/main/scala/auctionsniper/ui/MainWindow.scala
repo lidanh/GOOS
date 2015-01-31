@@ -28,9 +28,10 @@ object MainWindow {
   val SNIPER_STATUS_NAME = "sniper status"
 
   val STATUS_JOINING = "Joining"
-  val STATUS_LOST = "Lost"
   val STATUS_BIDDING = "Bidding"
   val STATUS_WINNING = "Winning"
+  val STATUS_LOST = "Lost"
+  val STATUS_WON = "Won"
 
   private def createLabel(initialText: String): JLabel = {
     val result = new JLabel(initialText)

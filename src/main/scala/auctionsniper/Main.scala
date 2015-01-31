@@ -33,7 +33,7 @@ class Main {
 
     val auction = new XMPPAuction(chat)
 
-    chat.addMessageListener(new AuctionMessageTranslator(new AuctionSniper(auction, new SniperStateDisplayer())))
+    chat.addMessageListener(new AuctionMessageTranslator(connection.getUser, new AuctionSniper(auction, new SniperStateDisplayer())))
 
     auction.join()
   }
@@ -72,6 +72,8 @@ class Main {
     override def sniperLost(): Unit = showStatus(MainWindow.STATUS_LOST)
 
     override def sniperWinning(): Unit = showStatus(MainWindow.STATUS_WINNING)
+
+    override def sniperWon(): Unit = showStatus(MainWindow.STATUS_WON)
 
     private[this] def showStatus(status: String): Unit = {
       SwingUtilities.invokeLater(new Runnable {
