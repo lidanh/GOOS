@@ -78,7 +78,7 @@ class Main {
     private[this] def showStatus(status: String): Unit = {
       SwingUtilities.invokeLater(new Runnable {
         override def run(): Unit = {
-          ui.foreach(_.showStatus(status))
+          ui.foreach(_.showStatusText(status))
         }
       })
     }

@@ -1,8 +1,7 @@
 package auctionsniper.ui
 
-import java.awt.Color
-import javax.swing.border.LineBorder
-import javax.swing.{JFrame, JLabel}
+import java.awt.BorderLayout
+import javax.swing.{JFrame, JScrollPane, JTable}
 
 /**
  * Created by lidan on 14/01/15.
@@ -10,33 +9,39 @@ import javax.swing.{JFrame, JLabel}
 class MainWindow extends JFrame("Auction Sniper") {
   import auctionsniper.ui.MainWindow._
 
-  val sniperStatus: JLabel = createLabel(STATUS_JOINING)
+  private val snipers = new SnipersTableModel()
 
   setName(MAIN_WINDOW_NAME)
-  add(sniperStatus)
+  fillContentPane(makeSnipersTable)
   pack()
   setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
   setVisible(true)
 
-  def showStatus(s: String) = {
-    sniperStatus.setText(s)
+  private def fillContentPane(sniperTable: JTable): Unit = {
+    val contentPane = getContentPane
+    contentPane.setLayout(new BorderLayout())
+
+    contentPane.add(new JScrollPane(sniperTable), BorderLayout.CENTER)
+  }
+
+  private def makeSnipersTable: JTable = {
+    new JTable(snipers) {
+      setName(SNIPERS_TABLE_NAME)
+    }
+  }
+
+  def showStatusText(statusText: String): Unit = {
+    snipers.setStatusText(statusText)
   }
 }
 
 object MainWindow {
   val MAIN_WINDOW_NAME = "Auction Sniper Main"
-  val SNIPER_STATUS_NAME = "sniper status"
+  val SNIPERS_TABLE_NAME = "snipers table"
 
   val STATUS_JOINING = "Joining"
   val STATUS_BIDDING = "Bidding"
   val STATUS_WINNING = "Winning"
   val STATUS_LOST = "Lost"
   val STATUS_WON = "Won"
-
-  private def createLabel(initialText: String): JLabel = {
-    val result = new JLabel(initialText)
-    result.setName(SNIPER_STATUS_NAME)
-    result.setBorder(new LineBorder(Color.BLACK))
-    result
-  }
 }
