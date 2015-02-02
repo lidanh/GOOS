@@ -2,14 +2,14 @@ package auctionsniper.ui
 
 import javax.swing.table.AbstractTableModel
 
-import auctionsniper.SniperSnapshot
+import auctionsniper.{SniperListener, SniperSnapshot}
 
 import scala.collection.mutable.ArrayBuffer
 
 /**
  * Created by lidan on 01/02/15.
  */
-class SnipersTableModel extends AbstractTableModel {
+class SnipersTableModel extends AbstractTableModel with SniperListener {
   private val snapshots = new ArrayBuffer[SniperSnapshot]
 
   this += SniperSnapshot.joining("item 1")
@@ -23,12 +23,15 @@ class SnipersTableModel extends AbstractTableModel {
 
   override def getColumnCount: Int = Column.values.length
 
+
+  override def getColumnName(column: Int): String = Column.at(column).name
+
   override def getValueAt(rowIndex: Int, columnIndex: Int): AnyRef = {
     Column.at(columnIndex).value(snapshots(rowIndex))
   }
 
-  def sniperStatusChanged(sniperSnapshot: SniperSnapshot): Unit = {
-    snapshots(0) = sniperSnapshot
+  override def sniperStateChanged(snapshot: SniperSnapshot): Unit = {
+    snapshots(0) = snapshot
     fireTableRowsUpdated(0, 0)
   }
 }

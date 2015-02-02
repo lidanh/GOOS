@@ -34,12 +34,16 @@ class SnipersTableModelTest extends Specification with Mockito {
     }
 
     "sets sniper values in columns" in new mock {
-      model.sniperStatusChanged(SniperSnapshot("item id", 555, 666, SniperState.Bidding))
+      model.sniperStateChanged(SniperSnapshot("item id", 555, 666, SniperState.Bidding))
 
       assertColumnEquals(Column.ItemIdentifier, "item id")
       assertColumnEquals(Column.LastPrice, 555)
       assertColumnEquals(Column.LastBid, 666)
-      assertColumnEquals(Column.SniperStatus, SniperState.Bidding)
+      assertColumnEquals(Column.SniperStatus, SniperState.Bidding.toString)
+    }
+
+    "sets up column heading" in new mock {
+      Column.values.foreach(col => col.name must_== model.getColumnName(col.ordinal))
     }
   }
 }

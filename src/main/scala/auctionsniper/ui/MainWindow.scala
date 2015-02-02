@@ -3,18 +3,15 @@ package auctionsniper.ui
 import java.awt.BorderLayout
 import javax.swing.{JFrame, JScrollPane, JTable}
 
-import auctionsniper.SniperSnapshot
-
 /**
  * Created by lidan on 14/01/15.
  */
-class MainWindow extends JFrame("Auction Sniper") {
+class MainWindow(val snipers: SnipersTableModel) extends JFrame("Auction Sniper") {
   import auctionsniper.ui.MainWindow._
 
-  private val snipers = new SnipersTableModel()
-
   setName(MAIN_WINDOW_NAME)
-  fillContentPane(makeSnipersTable)
+  setTitle(APPLICATION_TITLE)
+  fillContentPane(new JTable(snipers) { setName(SNIPERS_TABLE_NAME) })
   pack()
   setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
   setVisible(true)
@@ -25,19 +22,10 @@ class MainWindow extends JFrame("Auction Sniper") {
 
     contentPane.add(new JScrollPane(sniperTable), BorderLayout.CENTER)
   }
-
-  private def makeSnipersTable: JTable = {
-    new JTable(snipers) {
-      setName(SNIPERS_TABLE_NAME)
-    }
-  }
-
-  def sniperStatusChanged(snapshot: SniperSnapshot): Unit = {
-    snipers.sniperStatusChanged(snapshot)
-  }
 }
 
 object MainWindow {
+  val APPLICATION_TITLE = "Auction Sniper"
   val MAIN_WINDOW_NAME = "Auction Sniper Main"
   val SNIPERS_TABLE_NAME = "snipers table"
 }

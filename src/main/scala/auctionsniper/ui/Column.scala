@@ -26,7 +26,7 @@ object Column {
   }
 
   object SniperStatus extends Column("Status") {
-    override def value(snapshot: SniperSnapshot) = snapshot.state
+    override def value(snapshot: SniperSnapshot) = snapshot.state.toString
   }
 
   def at(offset: Int) = values(offset)

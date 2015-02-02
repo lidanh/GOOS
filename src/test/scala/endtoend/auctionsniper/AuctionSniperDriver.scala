@@ -1,8 +1,10 @@
 package endtoend.auctionsniper
 
+import javax.swing.table.JTableHeader
+
 import auctionsniper.ui.MainWindow
 import com.objogate.wl.swing.AWTEventQueueProber
-import com.objogate.wl.swing.driver.{ComponentDriver, JFrameDriver, JTableDriver}
+import com.objogate.wl.swing.driver.{ComponentDriver, JFrameDriver, JTableDriver, JTableHeaderDriver}
 import com.objogate.wl.swing.gesture.GesturePerformer
 import com.objogate.wl.swing.matcher.{IterableComponentsMatcher, JLabelTextMatcher}
 import org.hamcrest.CoreMatchers._
@@ -26,6 +28,16 @@ class AuctionSniperDriver(timeoutMillis: Int) extends JFrameDriver(new GesturePe
     JLabelTextMatcher.withLabelText(lastPrice.toString),
     JLabelTextMatcher.withLabelText(lastBid.toString),
     JLabelTextMatcher.withLabelText(statusText)
+    ))
+  }
+
+  def hasColumnTitles(): Unit = {
+    val headers = new JTableHeaderDriver(this, classOf[JTableHeader])
+    headers.hasHeaders(IterableComponentsMatcher.matching(
+    JLabelTextMatcher.withLabelText("Item"),
+    JLabelTextMatcher.withLabelText("Last Price"),
+    JLabelTextMatcher.withLabelText("Last Bid"),
+    JLabelTextMatcher.withLabelText("Status")
     ))
   }
 }

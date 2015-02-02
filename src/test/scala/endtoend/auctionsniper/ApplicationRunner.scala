@@ -1,6 +1,7 @@
 package endtoend.auctionsniper
 
 import auctionsniper.SniperState
+import auctionsniper.ui.MainWindow
 
 /**
  * Created by lidan on 14/01/15.
@@ -32,7 +33,10 @@ class ApplicationRunner {
     thread.setDaemon(true)
     thread.start()
     val d = new AuctionSniperDriver(1000)
+    d.hasTitle(MainWindow.APPLICATION_TITLE)
+    d.hasColumnTitles()
     driver = Some(d)
+//    d.showsSniperStatus(JOINING.itemId, JOINING.lastPrice, JOINING.lastBid, SniperState.Joining)
   }
 
   def hasShownSniperIsBidding(auction: FakeAuctionServer, lastPrice: Int, lastBid: Int): Unit = {

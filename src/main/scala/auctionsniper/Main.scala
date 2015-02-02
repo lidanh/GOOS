@@ -3,7 +3,7 @@ package auctionsniper
 import java.awt.event.{WindowAdapter, WindowEvent}
 import javax.swing.SwingUtilities
 
-import auctionsniper.ui.MainWindow
+import auctionsniper.ui.{MainWindow, SnipersTableModel, SwingThreadSniperListener}
 import org.jivesoftware.smack.{Chat, XMPPConnection, XMPPException}
 
 /**
@@ -14,13 +14,14 @@ class Main {
 
   private[this] var ui: Option[MainWindow] = None
   private[this] var notToBeGCd: Option[Chat] = None
+  private val snipers = new SnipersTableModel
 
   startUserInterface()
 
   private def startUserInterface(): Unit = {
     SwingUtilities.invokeAndWait(new Runnable {
       override def run(): Unit = {
-        ui = Some(new MainWindow())
+        ui = Some(new MainWindow(snipers))
       }
     })
   }
@@ -33,7 +34,7 @@ class Main {
 
     val auction = new XMPPAuction(chat)
 
-    chat.addMessageListener(new AuctionMessageTranslator(connection.getUser, new AuctionSniper(itemId, auction, new SniperStateDisplayer())))
+    chat.addMessageListener(new AuctionMessageTranslator(connection.getUser, new AuctionSniper(itemId, auction, new SwingThreadSniperListener(snipers))))
 
     auction.join()
   }
@@ -63,16 +64,6 @@ class Main {
       } catch {
         case e: XMPPException => e.printStackTrace()
       }
-    }
-  }
-
-  class SniperStateDisplayer extends SniperListener {
-    override def sniperStateChanged(snapshot: SniperSnapshot): Unit = {
-      SwingUtilities.invokeLater(new Runnable {
-        override def run(): Unit = {
-          ui.foreach(_.sniperStatusChanged(snapshot))
-        }
-      })
     }
   }
 }
