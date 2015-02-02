@@ -67,7 +67,7 @@ class Main {
   }
 
   class SniperStateDisplayer extends SniperListener {
-    override def notify(snapshot: SniperSnapshot): Unit = {
+    override def sniperStateChanged(snapshot: SniperSnapshot): Unit = {
       SwingUtilities.invokeLater(new Runnable {
         override def run(): Unit = {
           ui.foreach(_.sniperStatusChanged(snapshot))

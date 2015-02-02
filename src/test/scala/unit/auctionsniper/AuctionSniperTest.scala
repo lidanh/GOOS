@@ -30,7 +30,7 @@ class AuctionSniperTest extends Specification with Mockito {
     "reports lost when auction closes immediately" in new mock {
       auctionSniper.auctionClosed()
 
-      there was one(sniperListener).notify(withState(Lost))
+      there was one(sniperListener).sniperStateChanged(withState(Lost))
     }
 
     "bids higher and reports bidding when new price arrives" in new mock {
@@ -42,28 +42,28 @@ class AuctionSniperTest extends Specification with Mockito {
 
       got {
         one(auction).bid(bid)
-        atLeastOne(sniperListener).notify(SniperSnapshot(ITEM_ID, price, bid, SniperState.Bidding))
+        atLeastOne(sniperListener).sniperStateChanged(SniperSnapshot(ITEM_ID, price, bid, SniperState.Bidding))
       }
     }
 
     "reports winning when current price comes from sniper" in new mock {
       auctionSniper.currentPrice(123, 45, FromSniper)
 
-      there was atLeastOne(sniperListener).notify(withState(Winning))
+      there was atLeastOne(sniperListener).sniperStateChanged(withState(Winning))
     }
 
     "reports lost if auction closes when bidding" in new mock {
       auctionSniper.currentPrice(123, 45, FromOtherBidder)
       auctionSniper.auctionClosed()
 
-      there was one(sniperListener).notify(withState(Lost))
+      there was one(sniperListener).sniperStateChanged(withState(Lost))
      }
 
     "report won if auction closes when winning" in new mock {
       auctionSniper.currentPrice(123, 45, FromSniper)
       auctionSniper.auctionClosed()
 
-      there was one(sniperListener).notify(withState(Won))
+      there was one(sniperListener).sniperStateChanged(withState(Won))
     }
   }
 }

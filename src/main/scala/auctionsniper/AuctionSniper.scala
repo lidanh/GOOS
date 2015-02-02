@@ -18,16 +18,16 @@ class AuctionSniper(private val item: String, private val auction: Auction, priv
       snapshot = snapshot.bidding(price, bid)
     }
 
-    sniperListener.notify(snapshot)
+    sniperListener.sniperStateChanged(snapshot)
   }
 
   override def auctionFailed(): Unit = {
     snapshot = snapshot.failed()
-    sniperListener.notify(snapshot)
+    sniperListener.sniperStateChanged(snapshot)
   }
 
   override def auctionClosed(): Unit = {
     snapshot = snapshot.closed()
-    sniperListener.notify(snapshot)
+    sniperListener.sniperStateChanged(snapshot)
   }
 }
