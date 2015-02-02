@@ -4,7 +4,7 @@ import auctionsniper.ui.MainWindow
 import com.objogate.wl.swing.AWTEventQueueProber
 import com.objogate.wl.swing.driver.{ComponentDriver, JFrameDriver, JTableDriver}
 import com.objogate.wl.swing.gesture.GesturePerformer
-import com.objogate.wl.swing.matcher.JLabelTextMatcher
+import com.objogate.wl.swing.matcher.{IterableComponentsMatcher, JLabelTextMatcher}
 import org.hamcrest.CoreMatchers._
 
 /**
@@ -16,7 +16,16 @@ class AuctionSniperDriver(timeoutMillis: Int) extends JFrameDriver(new GesturePe
                                                                       ComponentDriver.showingOnScreen()),
                                                                     new AWTEventQueueProber(timeoutMillis, 100)) {
   def showsSniperStatus(statusText: String): Unit = {
-//    new JLabelDriver(this, ComponentDriver.named(MainWindow.SNIPER_STATUS_NAME)).hasText(equalTo(statusText))
     new JTableDriver(this).hasCell(JLabelTextMatcher.withLabelText(equalTo(statusText)))
+  }
+
+  def showsSniperStatus(itemId: String, lastPrice: Int, lastBid: Int, statusText: String): Unit = {
+    val table = new JTableDriver(this)
+    table.hasRow(IterableComponentsMatcher.matching(
+    JLabelTextMatcher.withLabelText(itemId),
+    JLabelTextMatcher.withLabelText(lastPrice.toString),
+    JLabelTextMatcher.withLabelText(lastBid.toString),
+    JLabelTextMatcher.withLabelText(statusText)
+    ))
   }
 }

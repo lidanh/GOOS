@@ -3,6 +3,8 @@ package auctionsniper.ui
 import java.awt.BorderLayout
 import javax.swing.{JFrame, JScrollPane, JTable}
 
+import auctionsniper.SniperSnapshot
+
 /**
  * Created by lidan on 14/01/15.
  */
@@ -30,18 +32,12 @@ class MainWindow extends JFrame("Auction Sniper") {
     }
   }
 
-  def showStatusText(statusText: String): Unit = {
-    snipers.setStatusText(statusText)
+  def sniperStatusChanged(snapshot: SniperSnapshot): Unit = {
+    snipers.sniperStatusChanged(snapshot)
   }
 }
 
 object MainWindow {
   val MAIN_WINDOW_NAME = "Auction Sniper Main"
   val SNIPERS_TABLE_NAME = "snipers table"
-
-  val STATUS_JOINING = "Joining"
-  val STATUS_BIDDING = "Bidding"
-  val STATUS_WINNING = "Winning"
-  val STATUS_LOST = "Lost"
-  val STATUS_WON = "Won"
 }

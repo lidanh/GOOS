@@ -33,7 +33,7 @@ class Main {
 
     val auction = new XMPPAuction(chat)
 
-    chat.addMessageListener(new AuctionMessageTranslator(connection.getUser, new AuctionSniper(auction, new SniperStateDisplayer())))
+    chat.addMessageListener(new AuctionMessageTranslator(connection.getUser, new AuctionSniper(itemId, auction, new SniperStateDisplayer())))
 
     auction.join()
   }
@@ -67,18 +67,10 @@ class Main {
   }
 
   class SniperStateDisplayer extends SniperListener {
-    override def sniperBidding(): Unit = showStatus(MainWindow.STATUS_BIDDING)
-
-    override def sniperLost(): Unit = showStatus(MainWindow.STATUS_LOST)
-
-    override def sniperWinning(): Unit = showStatus(MainWindow.STATUS_WINNING)
-
-    override def sniperWon(): Unit = showStatus(MainWindow.STATUS_WON)
-
-    private[this] def showStatus(status: String): Unit = {
+    override def notify(snapshot: SniperSnapshot): Unit = {
       SwingUtilities.invokeLater(new Runnable {
         override def run(): Unit = {
-          ui.foreach(_.showStatusText(status))
+          ui.foreach(_.sniperStatusChanged(snapshot))
         }
       })
     }
