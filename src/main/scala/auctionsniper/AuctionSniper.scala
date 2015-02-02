@@ -3,26 +3,31 @@ package auctionsniper
 /**
  * Created by lidan on 16/01/15.
  */
-class AuctionSniper(private val auction: Auction, private val sniperListener: SniperListener) extends AuctionEventListener {
+class AuctionSniper(private val item: String, private val auction: Auction, private val sniperListener: SniperListener) extends AuctionEventListener {
   private var isWinning = false
+  private var snapshot = SniperSnapshot.joining(item)
 
   override def currentPrice(price: Int, increment: Int, from: PriceSource): Unit = {
     isWinning = from == FromSniper
 
     if (isWinning) {
-      sniperListener.sniperWinning()
+      snapshot = snapshot.winning(price)
     } else {
-      auction.bid(price + increment)
-      sniperListener.sniperBidding()
+      val bid = price + increment
+      auction.bid(bid)
+      snapshot = snapshot.bidding(price, bid)
     }
+
+    sniperListener.notify(snapshot)
   }
 
-  override def auctionFailed(): Unit = ???
+  override def auctionFailed(): Unit = {
+    snapshot = snapshot.failed()
+    sniperListener.notify(snapshot)
+  }
 
   override def auctionClosed(): Unit = {
-    if (isWinning)
-      sniperListener.sniperWon()
-    else
-      sniperListener.sniperLost()
+    snapshot = snapshot.closed()
+    sniperListener.notify(snapshot)
   }
 }

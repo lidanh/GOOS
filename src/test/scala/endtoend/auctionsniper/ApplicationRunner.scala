@@ -1,5 +1,7 @@
 package endtoend.auctionsniper
 
+import auctionsniper.SniperState
+
 /**
  * Created by lidan on 14/01/15.
  */
@@ -12,7 +14,6 @@ object ApplicationRunner {
 class ApplicationRunner {
 
   import auctionsniper.Main
-  import auctionsniper.ui.MainWindow
   import endtoend.auctionsniper.ApplicationRunner._
 
   private[this] var driver: Option[AuctionSniperDriver] = None
@@ -34,20 +35,20 @@ class ApplicationRunner {
     driver = Some(d)
   }
 
-  def hasShownSniperIsBidding(): Unit = {
-    driver.foreach(_.showsSniperStatus(MainWindow.STATUS_BIDDING))
+  def hasShownSniperIsBidding(auction: FakeAuctionServer, lastPrice: Int, lastBid: Int): Unit = {
+    driver.foreach(_.showsSniperStatus(auction.itemId, lastPrice, lastBid, SniperState.Bidding.toString))
   }
 
   def showsSniperHasLostAuction(): Unit = {
-    driver.foreach(_.showsSniperStatus(MainWindow.STATUS_LOST))
+    driver.foreach(_.showsSniperStatus(SniperState.Lost.toString))
   }
 
-  def showsSniperHasWonAuction() = {
-    driver.foreach(_.showsSniperStatus(MainWindow.STATUS_WON))
+  def showsSniperHasWonAuction(auction: FakeAuctionServer, lastPrice: Int) = {
+    driver.foreach(_.showsSniperStatus(auction.itemId, lastPrice, lastPrice, SniperState.Won.toString))
   }
 
-  def hasShownSniperIsWinning() = {
-    driver.foreach(_.showsSniperStatus(MainWindow.STATUS_WINNING))
+  def hasShownSniperIsWinning(auction: FakeAuctionServer, winningBid: Int) = {
+    driver.foreach(_.showsSniperStatus(auction.itemId, winningBid, winningBid, SniperState.Winning.toString))
   }
 
   def stop(): Unit = {
